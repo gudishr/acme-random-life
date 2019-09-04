@@ -1,0 +1,97 @@
+<html>
+  <head>
+  <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js'></script>
+  <style>
+    body{
+      font-family: Verdana;
+    }
+  </style>
+
+  </head>
+  <body>
+    <div id='root'>
+    </div>
+    <script type='text/babel'>
+      const API = 'https://acme-users-api-rev.herokuapp.com/api';
+
+      const fetchUser = async ()=> {
+        const storage = window.localStorage;
+        const userId = storage.getItem('userId'); 
+        if(userId){
+          try {
+            return (await axios.get(`${API}/users/detail/${userId}`)).data;
+          }
+          catch(ex){
+            storage.removeItem('userId');
+            return fetchUser();
+          }
+        }
+        const user = (await axios.get(`${API}/users/random`)).data;
+        storage.setItem('userId', user.id);
+        return  user;
+      };
+
+      class Notes extends React.Component{
+        constructor({ props }){
+          super()
+          console.log(props)
+        }
+
+        async componentDidMount({props}){
+          console.log(this.props.id)
+          const notes = await axios.get(`https://acme-users-api-rev.herokuapp.com/api/users/${id}/notes`)
+          console.log(notes)
+        }
+
+        render(){
+          return (
+            <div>
+            <h2>notes</h2>
+          </div>
+          )}
+
+      }
+
+      class App extends React.Component{
+        constructor(){
+          super();
+          this.state = {
+            user: {},
+            companies: [],
+            vacations: [],
+            notes: [],
+            followingCompanies: [],
+            error: ''
+          };
+        }
+        async componentDidMount(){
+          const user = await fetchUser();
+          this.setState({
+            user
+          });
+        }
+        render(){
+          const { error, user, companies, vacations, followingCompanies, notes } = this.state;
+          const id = user.id
+          return (
+            <div>
+              <div>
+                <h1>The Acme Random Life</h1>
+                Welcome { user.fullName } to your Random Life!
+                <div className='error'>{ error }</div>
+              </div>
+              <Notes id={id} />
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<App />, document.querySelector('#root'));
+    </script>
+  </body>
+</html>
