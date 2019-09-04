@@ -37,18 +37,18 @@
       };
 
       class Notes extends React.Component{
-        constructor({ props }){
+        constructor(){
           super()
-          console.log(props)
         }
 
-        async componentDidMount({props}){
-          console.log(this.props.id)
-          const notes = await axios.get(`https://acme-users-api-rev.herokuapp.com/api/users/${id}/notes`)
-          console.log(notes)
+        async componentDidMount(){
+          console.log("In component did mount", this.props.id)
+          // const notes = await axios.get(`https://acme-users-api-rev.herokuapp.com/api/users/${id}/notes`)
+          // console.log(notes)
         }
 
         render(){
+          console.log("in render", this.props.id)
           return (
             <div>
             <h2>notes</h2>
@@ -58,8 +58,8 @@
       }
 
       class App extends React.Component{
-        constructor(){
-          super();
+        constructor(props){
+          super(props);
           this.state = {
             user: {},
             companies: [],
@@ -77,7 +77,6 @@
         }
         render(){
           const { error, user, companies, vacations, followingCompanies, notes } = this.state;
-          const id = user.id
           return (
             <div>
               <div>
@@ -85,7 +84,7 @@
                 Welcome { user.fullName } to your Random Life!
                 <div className='error'>{ error }</div>
               </div>
-              <Notes id={id} />
+              <Notes id={user.id} />
             </div>
           );
         }
